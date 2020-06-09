@@ -4,12 +4,32 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-void adaptShaderProgram();
+unsigned int genShaderProgram(const char* vertStr, const char* fragStr);
+
+const char* vertStr =
+"#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"void main() { gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); } \n\0";
+
+const char* fragStr =
+"#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main() { FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); } \n\0";
+
+const char* fragStr2 =
+"#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main() { FragColor = vec4(0.0f, 1.0f, 0.2f, 1.0f); } \n\0";
 
 float vertices[] = {
     -0.5f, -0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
      0.0f,  0.5f, 0.0f
+};
+float vertices2[] = {
+    -0.5f, -0.5f, 0.5f,
+     0.5f, -0.5f, 0.5f,
+     1.0f,  0.5f, 0.5f
 };
 
 int main()
@@ -40,21 +60,30 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // create vertex array object(VAO)
+    // prepare vertex buffer object
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    // prepare vertex buffer object
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // link
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // adapt shader
-    adaptShaderProgram();
+    unsigned int VAO2;
+    glGenVertexArrays(2, &VAO2);
+    glBindVertexArray(VAO2);
+    unsigned int VBO2;
+    glGenBuffers(2, &VBO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // prepare shader
+    unsigned int program = genShaderProgram(vertStr, fragStr);
+    unsigned int program2 = genShaderProgram(vertStr, fragStr2);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -63,7 +92,11 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glUseProgram(program);
         glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glUseProgram(program2);
+        glBindVertexArray(VAO2);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(window);
@@ -86,18 +119,8 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 }
 
-void adaptShaderProgram()
+unsigned int genShaderProgram(const char* vertStr, const char* fragStr)
 {
-    const char* vertStr =
-        "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "void main() { gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); } \n\0";
-
-    const char* fragStr =
-        "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main() { FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); } \n\0";
-
     // prepare vertex shader
     unsigned int vertShader;
     vertShader = glCreateShader(GL_VERTEX_SHADER);
@@ -137,8 +160,8 @@ void adaptShaderProgram()
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED\n" << infoLog << std::endl;
     }
-    glUseProgram(shaderProgram);
-
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
+
+    return shaderProgram;
 }
