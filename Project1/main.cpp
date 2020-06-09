@@ -16,20 +16,16 @@ const char* fragStr =
 "out vec4 FragColor;\n"
 "void main() { FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); } \n\0";
 
-const char* fragStr2 =
-"#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main() { FragColor = vec4(0.0f, 1.0f, 0.2f, 1.0f); } \n\0";
-
 float vertices[] = {
+    0.5f, 0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f,
     -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
+    -0.5f, 0.5f, 0.0f
 };
-float vertices2[] = {
-    -0.5f, -0.5f, 0.5f,
-     0.5f, -0.5f, 0.5f,
-     1.0f,  0.5f, 0.5f
+
+unsigned int indices[] = {
+    0, 1, 3,
+    1, 2, 3
 };
 
 int main()
@@ -68,22 +64,19 @@ int main()
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
 
-    unsigned int VAO2;
-    glGenVertexArrays(2, &VAO2);
-    glBindVertexArray(VAO2);
-    unsigned int VBO2;
-    glGenBuffers(2, &VBO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // prepare shader
     unsigned int program = genShaderProgram(vertStr, fragStr);
-    unsigned int program2 = genShaderProgram(vertStr, fragStr2);
+    
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -94,10 +87,8 @@ int main()
 
         glUseProgram(program);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glUseProgram(program2);
-        glBindVertexArray(VAO2);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
