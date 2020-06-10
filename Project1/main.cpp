@@ -1,25 +1,17 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include "helper.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 unsigned int genShaderProgram(const char* vertStr, const char* fragStr);
 
-const char* vertStr =
-"#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"out vec4 vertexColor;\n"
-"void main() {"
-"gl_Position = vec4(aPos, 1.0);"
-"vertexColor = vec4(aPos.x / 2 + 0.5, aPos.y / 2 + 0.5, aPos.z / 2 + 0.5, 1);"
-"} \n\0";
+const std::string _vertStr = readShader("vert.glsl");
+const char* vertStr = _vertStr.c_str();
 
-const char* fragStr =
-"#version 330 core\n"
-"in vec4 vertexColor;\n"
-"out vec4 FragColor;\n"
-"void main() { FragColor = vertexColor; } \n\0";
+const std::string _fragStr = readShader("frag.glsl");
+const char* fragStr = _fragStr.c_str();
 
 float vertices[] = {
     -1.0f, -1.0f, 0.0f,
