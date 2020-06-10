@@ -9,23 +9,27 @@ unsigned int genShaderProgram(const char* vertStr, const char* fragStr);
 const char* vertStr =
 "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
-"void main() { gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); } \n\0";
+"out vec4 vertexColor;\n"
+"void main() {"
+"gl_Position = vec4(aPos, 1.0);"
+"vertexColor = vec4(aPos.x / 2 + 0.5, aPos.y / 2 + 0.5, aPos.z / 2 + 0.5, 1);"
+"} \n\0";
 
 const char* fragStr =
 "#version 330 core\n"
+"in vec4 vertexColor;\n"
 "out vec4 FragColor;\n"
-"void main() { FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); } \n\0";
+"void main() { FragColor = vertexColor; } \n\0";
 
 float vertices[] = {
-    0.5f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    -0.5f, 0.5f, 0.0f
+    -1.0f, -1.0f, 0.0f,
+    1.0f, -1.0f, 0.0f,
+    1.0f, 1.0f, 0.0f,
 };
 
 unsigned int indices[] = {
-    0, 1, 3,
-    1, 2, 3
+    0, 1, 2,
+    //1, 2, 3
 };
 
 int main()
@@ -76,7 +80,7 @@ int main()
     // prepare shader
     unsigned int program = genShaderProgram(vertStr, fragStr);
     
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     while (!glfwWindowShouldClose(window))
     {
