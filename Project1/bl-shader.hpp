@@ -127,6 +127,12 @@ namespace BL
             glUniform1f(glGetUniformLocation(_id, name.c_str()), value);
             return *this;
         }
+
+        Shader setVec2(const std::string& name, GLfloat v0, GLfloat v1)
+        {
+            glUniform2f(glGetUniformLocation(_id, name.c_str()), v0, v1);
+            return *this;
+        }
     };
 
 };
