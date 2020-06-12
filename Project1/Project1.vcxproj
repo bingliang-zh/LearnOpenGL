@@ -147,7 +147,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="helper.hpp" />
+    <ClInclude Include="bl-shader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="frag.glsl" />

@@ -1,17 +1,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "helper.hpp"
+#include "bl-shader.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-unsigned int genShaderProgram(const char* vertStr, const char* fragStr);
 
-const std::string _vertStr = readShader("vert.glsl");
-const char* vertStr = _vertStr.c_str();
-
-const std::string _fragStr = readShader("frag.glsl");
-const char* fragStr = _fragStr.c_str();
+const std::string vertPath = "vert.glsl";
+const std::string fragPath = "frag.glsl";
 
 float vertices[] = {
     // Î»ÖÃ              // ÑÕÉ«
@@ -73,7 +69,8 @@ int main()
     glEnableVertexAttribArray(1);
 
     // prepare shader
-    unsigned int program = genShaderProgram(vertStr, fragStr);
+    BL::Shader shader = BL::Shader(vertPath.c_str(), fragPath.c_str());
+    unsigned int program = shader.id();
     
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -112,51 +109,4 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-}
-
-unsigned int genShaderProgram(const char* vertStr, const char* fragStr)
-{
-    // prepare vertex shader
-    unsigned int vertShader;
-    vertShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertShader, 1, &vertStr, NULL);
-    glCompileShader(vertShader);
-
-    // prepare fragment shader
-    unsigned int fragShader;
-    fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragShader, 1, &fragStr, NULL);
-    glCompileShader(fragShader);
-
-    // verify shader compile results
-    char infoLog[512];
-    int  success;
-    glGetShaderiv(vertShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    glGetShaderiv(fragShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // prepare shader program
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertShader);
-    glAttachShader(shaderProgram, fragShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED\n" << infoLog << std::endl;
-    }
-    glDeleteShader(vertShader);
-    glDeleteShader(fragShader);
-
-    return shaderProgram;
 }
