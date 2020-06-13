@@ -15,24 +15,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="..\glad\src\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="bl-shader.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="vert.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="frag.glsl">
-      <Filter>资源文件</Filter>
-    </None>
   </ItemGroup>
 </Project>

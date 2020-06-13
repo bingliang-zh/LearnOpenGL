@@ -1,13 +1,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "bl-shader.hpp"
+#include "../vendor/bl-shader.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
-const std::string vertPath = "vert.glsl";
-const std::string fragPath = "frag.glsl";
+const std::string vertPath = "shaders/vert.glsl";
+const std::string fragPath = "shaders/frag.glsl";
 
 float vertices[] = {
     // Î»ÖÃ              // ÑÕÉ«
