@@ -31,6 +31,8 @@ unsigned int indices[] = {
     0, 2, 3
 };
 
+float mixValue = 0.5;
+
 int main()
 {
     glfwInit();
@@ -131,6 +133,7 @@ int main()
 
     shader.setInt("texture0", 0);
     shader.setInt("texture1", 1);
+    shader.setFloat("mixValue", mixValue);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -160,8 +163,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
-
-float mixValue = 0.5;
 
 void processInput(GLFWwindow* window, BL::Shader shader)
 {

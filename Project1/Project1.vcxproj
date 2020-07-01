@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Tools\glfw-3.3.2.bin.WIN64\include;C:\Projects\LearnOpenGL\glad\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Tools\glfw-3.3.2.bin.WIN64\include;C:\Projects\LearnOpenGL\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Tools\glfw-3.3.2.bin.WIN64\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
