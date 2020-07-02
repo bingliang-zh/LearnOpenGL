@@ -1,4 +1,7 @@
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "../vendor/bl-shader.hpp"
@@ -129,11 +132,17 @@ int main()
     
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.0f));
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+
     shader.activate();
 
     shader.setInt("texture0", 0);
     shader.setInt("texture1", 1);
     shader.setFloat("mixValue", mixValue);
+    //glUniformMatrix4fv(glGetUniformLocation(shader.id(), "transform"), 1, GL_FALSE, glm::value_ptr(trans));
 
     while (!glfwWindowShouldClose(window))
     {
@@ -151,6 +160,9 @@ int main()
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+
+        trans = glm::rotate(trans, (float)glfwGetTime() / 1000, glm::vec3(0.0f, 0.0f, 1.0f));
+        glUniformMatrix4fv(glGetUniformLocation(shader.id(), "transform"), 1, GL_FALSE, glm::value_ptr(trans));
 
         glfwSwapBuffers(window);
         glfwPollEvents();
