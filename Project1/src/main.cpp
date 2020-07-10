@@ -14,13 +14,7 @@ void processInput(GLFWwindow* window, BL::Shader shader);
 const std::string vertPath = "shaders/vert.glsl";
 const std::string fragPath = "shaders/frag.glsl";
 
-//float vertices[] = {
-////     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-//    0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
-//    0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
-//    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
-//    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
-//};
+
 float vertices[] = { // practice ii, iii
     //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.6f, 0.6f,   2.0f, 2.0f, // 右上
@@ -35,6 +29,8 @@ unsigned int indices[] = {
 };
 
 float mixValue = 0.5;
+float screenWidth = 800;
+float screenHeight = 600;
 
 int main()
 {
@@ -44,7 +40,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // create window
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -60,7 +56,7 @@ int main()
         return -1;
     }
 
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, screenWidth, screenHeight);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // create vertex array object(VAO)
@@ -130,19 +126,22 @@ int main()
     BL::Shader shader = BL::Shader(vertPath.c_str(), fragPath.c_str());
     unsigned int program = shader.id();
     
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.0f));
-    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-    //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-
     shader.activate();
 
     shader.setInt("texture0", 0);
     shader.setInt("texture1", 1);
     shader.setFloat("mixValue", mixValue);
-    //glUniformMatrix4fv(glGetUniformLocation(shader.id(), "transform"), 1, GL_FALSE, glm::value_ptr(trans));
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    // 观察矩阵
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    // 投影矩阵
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -161,8 +160,12 @@ int main()
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
-        trans = glm::rotate(trans, (float)glfwGetTime() / 1000, glm::vec3(0.0f, 0.0f, 1.0f));
-        glUniformMatrix4fv(glGetUniformLocation(shader.id(), "transform"), 1, GL_FALSE, glm::value_ptr(trans));
+        int modelLoc = glGetUniformLocation(program, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        int viewLoc = glGetUniformLocation(program, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        int projectionLoc = glGetUniformLocation(program, "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         glfwSwapBuffers(window);
         glfwPollEvents();
